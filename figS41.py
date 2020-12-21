@@ -33,7 +33,7 @@ import qmodisplay as display
 from qmomath import generic_fit, lorentzian
 
 def load_intralayer_data(fl='intra-800-900', pc0=-0.810, N=100):
-    dir = join('..','datasets','intralayer-exciton')
+    dir = join('datasets','intralayer-exciton')
     Vg = np.loadtxt(join(dir, fl+'-x.txt'))
     Eph = np.loadtxt(join(dir, fl+'-y.txt'))
     pc = np.loadtxt(join(dir, fl+'-d.txt'))
@@ -45,7 +45,7 @@ def load_intralayer_data(fl='intra-800-900', pc0=-0.810, N=100):
 
 def triplepeak(x, *pm):
     return lorentzian(x, pm[0], pm[1], pm[2], 0) + lorentzian(x, pm[3], pm[4], pm[5], 0) + lorentzian(x, pm[6], pm[7], pm[8], 0)
-#
+# end triplepeak
 
 def calc_redshift(dataset, Vgcut=-5):
     Eph, Vg, pc = dataset

@@ -64,7 +64,6 @@ def plot_Raman_data(ax, axin, inx1=25.75, inx2=35.25, centerb=30.0, x1=20, x2=75
     x = np.linspace(x1, x2, N)
     for i in range(N):
         V[i,:] = gauss(x, 1.0, centerb, sigma)
-    #ax.imshow(np.flipud(V), cmap=getcmap(), vmin=0, vmax=2.0, extent=[x1, x2, y1, y2], aspect='auto')
     ax.imshow(np.flipud(V), cmap=getcmap(), vmin=0, vmax=2.7, extent=[x1, x2, y1, y2], aspect='auto')
 
     axin.set_xlim(inx1,inx2)
@@ -72,7 +71,7 @@ def plot_Raman_data(ax, axin, inx1=25.75, inx2=35.25, centerb=30.0, x1=20, x2=75
     axin.set_xticks([26,30,34])
     axin.set_xlabel('shift (meV)', labelpad=2)
     axin.set_ylabel('intensity (arb.)', labelpad=1)
-# end plot_PL_data
+# end plot_Raman_data
 
 def plot_PL_data(ax):
     fl = join('datasets', 'Raman-PL data')
@@ -152,7 +151,6 @@ if __name__ == '__main__':
     xint = 0.65
     yint = 0.33
     width = 2.75
-    # width2 = 3.5
     height2 = (2.5/3.5)*width
 
     ax1 = fi.make_axes([xmargin, ymargin+width+yint, width, height2])

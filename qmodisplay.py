@@ -28,6 +28,8 @@ from mpl_toolkits.axes_grid1.inset_locator import InsetPosition
 
 import numpy as np
 import argparse
+from os.path import exists
+from os import mkdir
 
 matplotlib.rcParams["keymap.fullscreen"] = ''
 
@@ -382,6 +384,9 @@ def argsave():
 
     if args.savefile is None:
         svfile = "figs"
+        if not exists(svfile):
+            mkdir(svfile)
+
     else:
         svfile = args.savefile
 
