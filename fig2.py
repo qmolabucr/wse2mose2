@@ -252,15 +252,15 @@ if __name__ == '__main__':
     y1 = 0.98
     y2 = 0.58
     y3 = 0.38
-    plt.figtext(x1, y1, 'A', **lblparams)
-    plt.figtext(x2, y1, 'B', **lblparams)
-    plt.figtext(x3, y1, 'C', **lblparams)
+    plt.figtext(x1, y1, 'a', **lblparams)
+    plt.figtext(x2, y1, 'b', **lblparams)
+    plt.figtext(x3, y1, 'c', **lblparams)
 
-    plt.figtext(x1, y2, 'D', **lblparams)
+    plt.figtext(x1, y2, 'd', **lblparams)
 
-    plt.figtext(x1, y3, 'E', **lblparams)
-    plt.figtext(x2, y3, 'F', **lblparams)
-    plt.figtext(x3, y3, 'G', **lblparams)
+    plt.figtext(x1, y3, 'e', **lblparams)
+    plt.figtext(x2, y3, 'f', **lblparams)
+    plt.figtext(x3, y3, 'g', **lblparams)
 
     if save:
         plt.savefig(join(svfile, 'fig2.png'), dpi=300)

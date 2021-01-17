@@ -143,9 +143,9 @@ if __name__ == '__main__':
     lblparams = {'fontsize':16, 'weight':'bold'}
     y1 = 0.94
     y2 = 0.45
-    plt.figtext(0.08, y1, 'A', **lblparams)
-    plt.figtext(0.6, y1, 'B', **lblparams)
-    plt.figtext(0.6, y2, 'C', **lblparams)
+    plt.figtext(0.08, y1, 'a', **lblparams)
+    plt.figtext(0.6, y1, 'b', **lblparams)
+    plt.figtext(0.6, y2, 'c', **lblparams)
 
     if save:
         plt.savefig(join(svfile, 'figS48.png'), dpi=300)

@@ -234,9 +234,9 @@ if __name__ == '__main__':
     x2 = 0.42
     x3 = 0.79
     y1 = 0.94
-    plt.figtext(x1, y1, 'A', **lblparams)
-    plt.figtext(x2, y1, 'B', **lblparams)
-    plt.figtext(x3, y1, 'C', **lblparams)
+    plt.figtext(x1, y1, 'a', **lblparams)
+    plt.figtext(x2, y1, 'b', **lblparams)
+    plt.figtext(x3, y1, 'c', **lblparams)
 
     if save:
         plt.savefig(join(svfile, 'fig4.png'), dpi=300)
