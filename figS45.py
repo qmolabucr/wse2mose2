@@ -1,8 +1,8 @@
 '''
 figS45.py
 
-version 1.1
-last updated: December 2020
+version 1.2
+last updated: September 2021
 
 by Trevor Arp
 Quantum Materials Optoelectronics Laboratory
@@ -14,9 +14,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-A visualization script to display supplementary Fig. S4.5 from the paper 'Stacking
-enabled strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+A visualization script to display supplementary Fig. S4.5 from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''
@@ -53,7 +52,7 @@ def lambda_Vg_phase(ax1, ax2, ax1cb, dataset, v1=0, v2=0.4):
             I[i,j] = avg_region(coords, d[:,:,i,j]/pw[i])
     #
 
-    pc = gaussian_filter(I, 1.0)
+    pc = gaussian_filter(np.abs(I), 1.0)
     cmap, cNorm, scalarMap = display.colorscale_map(pc, cmin=0, cmax=1, mapname='viridis')
     display.change_axes_colors(ax1cb, 'w')
     mpl.rcParams['axes.edgecolor'] = 'w'
@@ -72,7 +71,7 @@ def lambda_Vg_phase(ax1, ax2, ax1cb, dataset, v1=0, v2=0.4):
     for i in range(Mw):
         E[i] = (h_eV*c_nm)/w[i]
     Ie = np.mean(I[:,ix1:ix2],axis=1)
-    Ie = gaussian_filter(Ie, 1.0)
+    Ie = gaussian_filter(np.abs(Ie), 1.0)
     p, perr = lorentzian_fit(E, Ie)
     ftx = np.linspace(np.min(E), np.max(E), 200)
     ft = lorentzian(ftx, *p)
@@ -91,7 +90,7 @@ def lambda_Vg_phase(ax1, ax2, ax1cb, dataset, v1=0, v2=0.4):
 def tile_plot(ax1, dataset, spinewidth=0.2):
     Vsd, Vg, w, pw, d = dataset
     rows, cols, Mw, Mg = d.shape
-    cmap, cnorm, smap = display.colorscale_map(d, mapname='PuOr', cmin=-10, cmax=10)
+    cmap, cnorm, smap = display.colorscale_map(d, mapname='PuOr_r', cmin=-10, cmax=10)
 
     rcoords = np.array(range(0,Mw,1))
     ccoords = np.array(range(0,Mg,1))

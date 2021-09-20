@@ -25,6 +25,7 @@ import numpy as np
 import warnings
 
 from scipy.optimize import curve_fit
+from scipy.optimize import leastsq
 from scipy.fftpack import fft, fftfreq
 
 h_eV = 4.135667662e-15 # eV s
@@ -165,6 +166,33 @@ def normfft_freq(t, d):
     freq = fftfreq(n, d=np.mean(np.diff(t)))
     return freq, f
 # end normfft
+
+def leastsq_2D_fit(x, y, data, p0, fitfunc):
+    '''
+    A general fitting routine for two-dimensional data using scipy.optimize.leastsq
+
+    Args:
+        x : the row variable of the data.
+        y : the column variable of the data.
+        data : a 2D array as a function of x and y
+        p0 : the initial guesses of the parameters
+        fitfunc : the function to minimize, takes params func(x, y, \*p) and returns a 2D array
+            in the same format as the data.
+
+    Returns:
+        popt, pcov
+
+            popt - The solution (or the result of the last iteration of an unsuccessful call.)
+
+            pcov - Estimate of the covariance matrix from the Jacobian around the solution. The diagonals estimate the variance of the parameters.
+    '''
+    def lsq_func(params):
+        r = data - fitfunc(x, y, *params)
+        return r.flatten()
+    #
+    retval = leastsq(lsq_func, p0, full_output=1)
+    return retval[0], retval[1]
+# end leastsq_2D_fit
 
 if __name__ == "__init__":
     print("Calculation code from the QMO Lab")

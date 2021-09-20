@@ -1,8 +1,8 @@
 '''
 figS48.py
 
-version 1.1
-last updated: December 2020
+version 1.2
+last updated: September 2021
 
 by Trevor Arp
 Quantum Materials Optoelectronics Laboratory
@@ -14,9 +14,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-A visualization script to display supplementary Fig. S4.8 from the paper 'Stacking
-enabled strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+A visualization script to display supplementary Fig. S4.8 from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''
@@ -53,6 +52,7 @@ def plot_phase_map(ax, dataset, cmap, cnorm, p):
 def show_line_cuts(ax, dataset, Vcuts):
     Vsd, Vg, d, pc = dataset
     rows, cols, Mg, Mb = d.shape
+    pc = np.abs(pc)
     Vg_ = np.linspace(np.min(Vg), np.max(Vg), 200)
     cmap, cnorm, smap = display.colorscale_map(Vcuts, 'viridis')
     txtprops = {'va':'center', 'ha':'left', 'transform':ax.transAxes}
@@ -73,12 +73,13 @@ def show_line_cuts(ax, dataset, Vcuts):
     ax.set_yticks([0,5,10])
     ax.set_yticklabels(["0   ", "5   ", "10  "])
     ax.set_xlabel(r"$V_{\mathrm{G}}$ (V)")
-    ax.set_ylabel(r"$I_{\mathrm{PC}}$ (nA)", labelpad=1)
+    ax.set_ylabel(r"$|I_{\mathrm{PC}}$| (nA)", labelpad=1)
 # end show_line_cuts
 
 def show_Vgmax(ax, dataset, V1=-0.1):
     Vsd, Vg, d, pc = dataset
     rows, cols = pc.shape
+    pc = np.abs(pc)
     Vg_ = np.linspace(np.min(Vg), np.max(Vg),200)
     ix1 = np.searchsorted(Vsd, V1)
     Vgmax = np.zeros(rows)
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     ax31 = fi.make_axes([xmargin+width3+xint, ystart+width2+yint2, width2, width2])
     ax32 = fi.make_axes([xmargin+width3+xint, ystart, width2, width2])
 
-    cmap, cnorm, smap = display.colorscale_map(dataset[3], mapname='PuOr', cmin=-10, cmax=10)
+    cmap, cnorm, smap = display.colorscale_map(dataset[3], mapname='PuOr_r', cmin=-10, cmax=10)
     cb = display.make_colorbar(axcb, cmap, cnorm, ticks=[-10, -5, 0, 5, 10])
     axcb.set_ylabel(r'$I_{\mathrm{PC}}$ (nA)', labelpad=0)
 

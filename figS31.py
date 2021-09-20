@@ -14,9 +14,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-A visualization script to display supplementary Fig. S3.1 from the paper 'Stacking
-enabled strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+A visualization script to display supplementary Fig. S3.1 from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''

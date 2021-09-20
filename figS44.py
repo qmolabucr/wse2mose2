@@ -1,8 +1,8 @@
 '''
 figS44.py
 
-version 1.1
-last updated: December 2020
+version 1.2
+last updated: September 2021
 
 by Trevor Arp
 Quantum Materials Optoelectronics Laboratory
@@ -14,9 +14,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-A visualization script to display supplementary Fig. S4.4 from the paper 'Stacking
-enabled strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+A visualization script to display supplementary Fig. S4.4 from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''
@@ -111,18 +110,6 @@ def plot_series(axes, dataset, Vsdvals, Vgval, cmap, cnorm, heteroarea, showxlab
             axes[0].set_ylabel(str(round(Vg[ixVg],1)) + ' V', fontsize=14)
 # end plot_series
 
-def plot_phase_map(ax, dataset, cmap, cnorm, heteroarea, load=True, ixx=32, ixy=51):
-    Vsd, Vg, d = dataset
-    rows, cols, Mg, Mb = d.shape
-    data = np.load(join('..','data','c4','area_averaged','Vg_Vsd_narrow_hetero.npy'))
-    ax.imshow(data, extent=[np.min(Vsd), np.max(Vsd), np.min(Vg), np.max(Vg)], cmap=cmap, norm=cnorm, interpolation='bilinear', aspect='auto')
-    display.yaxis_right(ax)
-    ax.set_xticks([0, -0.2, -0.4, -0.6])
-    ax.set_xlabel(r'V$_{SD}$ (V)')
-    ax.set_yticks([-1, -0.5, 0.0, 0.5, 1.0])
-    ax.set_ylabel(r'V$_{G}$ (V)')
-# end plot_phase_map
-
 if __name__ == '__main__':
     save, svfile = display.argsave()
 
@@ -157,7 +144,7 @@ if __name__ == '__main__':
             series[k].append(fi.make_axes([xmargin+i*width2, ymargin+k*(yint2+width2), width2, width2], zorder=12))
     #
 
-    cmap, cnorm, smap = display.colorscale_map(d, mapname='PuOr', cmin=-10, cmax=10)
+    cmap, cnorm, smap = display.colorscale_map(d, mapname='PuOr_r', cmin=-10, cmax=10)
     display.make_colorbar(ax1cb, cmap, cnorm, orientation='horizontal', ticks=[-10, -5, 0, 5, 10])
     ax1cb.set_title('$I_{\mathrm{PC}}$ (nA)', ha='center')
 

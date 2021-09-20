@@ -14,9 +14,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-Module for loading the MPDPM imaging datasets from the paper 'Stacking enabled
-strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+Module for loading the MPDPM imaging datasets from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''
@@ -46,6 +45,7 @@ def load_image_dataset(key="Vg_Vsd_narrow", refdata=False):
     Vsd = files['Vsd'] # Source/Drain voltage (mV)
     Vg = files['Vg'] # Gate Voltage (V)
     d = files['d'] # drift corrected photocurrent images (nA)
+    d = -1.0*d # -1 For consistent sign convention, positive voltage gives positive current
     if refdata:
         r = np.load(join(savefile,key+"_ref.npy")) # drift corrected Reflection (arb.)
 
@@ -93,6 +93,7 @@ def load_spectro_image_dataset(key="Vg_Wave_350"):
         w = files['w']
         pw = files['pw']
         d = files['d']
+        d = -1.0*d # -1 For consistent sign convention, positive voltage gives positive current
         return Vsd, Vg, w, pw, d
     else:
         raise ValueError("Invalid dataset name " + key)

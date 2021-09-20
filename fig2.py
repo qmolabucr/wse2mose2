@@ -1,8 +1,8 @@
 '''
 fig2.py
 
-version 1.1
-last updated: December 2020
+version 1.2
+last updated: September 2021
 
 by Trevor Arp
 Quantum Materials Optoelectronics Laboratory
@@ -14,21 +14,24 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Description:
-A visualization script to display Fig. 2 from the paper 'Stacking enabled
-strong coupling of atomic motion to interlayer excitons in van der Waals
-heterojunction photodiodes'
+A visualization script to display Fig. 2 from the paper 'Stacking enabled vibronic
+exciton-phonon states in van der Waals heterojunctions'
 
 See accompanying README.txt for instructions on using this code.
 '''
 
 import numpy as np
-from numpy.fft import fft2, fftshift, fftfreq
 
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+from matplotlib.patches import FancyArrowPatch
+
+from numpy.fft import fft2, fftshift, fftfreq
 
 import qmodisplay as display
-from qmomath import dydx
+
+from qmomath import dydx, lorentzian
+from qmomath import generic_fit
 
 from os.path import join
 
@@ -144,6 +147,104 @@ def show_highE_line_cuts(ax, dataset, V1=-4, V2=2, y1=1.15, y2=3.0):
     ax.set_xlabel(r'$E_{\mathrm{PH}}$ (eV)')
 # end show_line_cuts
 
+def guide_to_eye(ax, x0, y0, dy=0.1):
+    dy2 = dy / 2
+    ax.annotate('', xy=(x0, y0), xytext=(x0-0.030, y0), arrowprops=dict(arrowstyle="<|-|>", color='k'), annotation_clip=False)
+    ax.annotate('', xy=(x0, y0-dy2), xytext=(x0, y0+dy2), arrowprops=dict(arrowstyle="-", color='k'), annotation_clip=False)
+    ax.annotate('', xy=(x0-0.030, y0-dy2), xytext=(x0-0.030, y0+dy2), arrowprops=dict(arrowstyle="-", color='k'), annotation_clip=False)
+    ax.annotate('30'+'\n'+'meV', xy=(x0-0.015, y0+dy/2), annotation_clip=False, ha='center', color='k')
+
+def show_highE_fit_cut(ax, dataset, V1=-4, Estart=1.253):
+    def sum_lorentz(x, *p):
+        ret = None
+        for i in range(0, 5):
+            ix = 4*i
+            if ret is None:
+                ret = lorentzian(x, p[ix], p[ix+1], p[ix+2], p[ix+3])
+            else:
+                ret = ret + lorentzian(x, p[ix], p[ix+1], p[ix+2], p[ix+3])
+        # Need to introduce a penalty to deal with overfitting making parameters negative
+        if any(param < 0 for param in p):
+            penalty = 100000000000000.0
+        elif p[ix] < 1e-4:
+            penalty = 100000000000000.0
+        else:
+            penalty = 1.0
+        return penalty*ret
+
+    Eph, Vg, pc, dpc, d2pc = dataset
+    ix1 = np.searchsorted(Vg, V1)
+    Vmap, Vnorm, Vsmap = display.colorscale_map(Vg[ix1-2:ix1+5], mapname='viridis', truncate=(0,0.8))
+    txtprops = {'va':'center', 'ha':'left', 'transform':ax.transAxes}
+    ax.text(0.04, 0.95, r"$V_{\mathrm{G}}=$ " + str(round(Vg[ix1],1)) + " V", **txtprops)
+    ax.plot(Eph, pc[:,ix1], 'o', color=Vsmap.to_rgba(V1))
+
+    p0 = [0.01, Estart, 0.01, 1.2]
+    for i in range(1, 5):
+        p0.extend([0.01, Estart+i*0.030, 0.01, 0])
+    p, perr = generic_fit(Eph, pc[:,ix1], p0, sum_lorentz)
+
+    xx = np.linspace(np.min(Eph), np.max(Eph), 200)
+    ft = sum_lorentz(xx, *p)
+    ax.plot(xx, ft, 'k')
+    for i in range(5):
+        ix = 4*i
+        #print(p[ix:ix+3])
+        ft = lorentzian(xx, p[ix], p[ix+1], p[ix+2], 1.6)
+        ax.plot(xx, ft, '-', color='lightgray')
+    ax.set_xticks([])
+    ax.set_xticks(np.arange(1.24, 1.41, 0.05))
+    ax.set_xlim(np.min(Eph), np.max(Eph))
+    ax.set_yticks(np.arange(0.6, 4.0, 0.2))
+    ax.set_ylim(1.6, 2.8)
+    ax.set_ylabel(r'photocurrent $I_{\mathrm{PC}}$ (pA)')
+    ax.set_xlabel(r'$E_{\mathrm{PH}}$ (eV)')
+    guide_to_eye(ax, 1.379, 2.54)
+# end show_line_cuts
+
+def show_lowE_fit_cut(ax, dataset, V1=-2, Estart=0.89):
+    def sum_lorentz(x, *p):
+        ret = None
+        for i in range(0, 5):
+            ix = 4*i
+            if ret is None:
+                ret = lorentzian(x, np.abs(p[ix]), p[ix+1], p[ix+2], p[ix+3])
+            else:
+                ret = ret + lorentzian(x, np.abs(p[ix]), p[ix+1], p[ix+2], p[ix+3])
+            penalty = 1.0
+        return penalty*ret
+
+    Eph, Vg, pc, dpc, d2pc = dataset
+    ix1 = np.searchsorted(Vg, V1)
+    Vmap, Vnorm, Vsmap = display.colorscale_map(Vg[ix1-2:ix1+5], mapname='viridis', truncate=(0,0.8))
+    txtprops = {'va':'center', 'ha':'left', 'transform':ax.transAxes}
+    ax.text(0.04, 0.95, r"$V_{\mathrm{G}}=$ " + str(round(Vg[ix1],1)) + " V", **txtprops)
+    ax.plot(Eph, pc[:,ix1], 'o', color=Vsmap.to_rgba(V1))
+
+    p0 = [0.01, Estart, 0.01, 1.2]
+    for i in range(1, 5):
+        p0.extend([0.01, Estart+i*0.030, 0.01, 0])
+    p, perr = generic_fit(Eph, pc[:,ix1], p0, sum_lorentz)
+
+    xx = np.linspace(np.min(Eph), np.max(Eph), 200)
+    ft = sum_lorentz(xx, *p)
+    ax.plot(xx, ft, 'k')
+    for i in range(5):
+        ix = 4*i
+        #print(p[ix:ix+3])
+        ft = lorentzian(xx, np.abs(p[ix]), p[ix+1], p[ix+2], 0.2)
+        ax.plot(xx, ft, '-', color='lightgray')
+    ax.set_xticks([])
+    ax.set_xticks(np.arange(0.9, 1.31, 0.05))
+    ax.set_xlim(np.min(Eph), np.max(Eph))
+    ax.set_ylim(0.2,1.6)
+    # ax.set_yticks(np.arange(0.0, 1.0, 0.2))
+    ax.set_ylabel(r'photocurrent $I_{\mathrm{PC}}$ (pA)')
+    ax.set_xlabel(r'$E_{\mathrm{PH}}$ (eV)')
+    guide_to_eye(ax, 0.922, 0.73)
+
+# end show_line_cuts
+
 def show_fft(ax, axcb, dataset, c='w', show22=False):
     Eph, Vg, pc, dpc, d2pc = dataset
     rows, cols = d2pc.shape
@@ -173,7 +274,7 @@ def show_fft(ax, axcb, dataset, c='w', show22=False):
 # show_fft
 
 def show_center_schematic(ax):
-    image1 = plt.imread(join('schematics','interlayer-exciton.png'))
+    image1 = plt.imread(join('..','schematics','interlayer exciton 2.png'))
     ax.axis('off')
     ax.imshow(image1, aspect='auto')
     txtparams = {'ha':'left', 'va':'center'}
@@ -188,6 +289,10 @@ def show_center_schematic(ax):
 
     ax.text(2465, 295, r"$\Gamma \rightarrow K$", color='#ff0000', **txtparams)
     ax.text(1900, 390, r"$K \rightarrow K$", color='#0000ff', **txtparams)
+
+    arr = FancyArrowPatch((1200,520), (1200,200), arrowstyle="-|>", color='k', lw=2, mutation_scale=10)
+    ax.text(1270, 360, r"$\mathbf{p}$", color='k', fontsize=12, **txtparams)
+    ax.add_patch(arr)
 # end show_band_schematic
 
 if __name__ == '__main__':
@@ -233,13 +338,13 @@ if __name__ == '__main__':
     ax8cb = fi.make_axes([xmargin+2*xint+2*width+cbmargin, ymargin+height-cbheight-3*cbmargin, cbwidth, cbheight])
 
     show_pc_map(ax1, ax1cb, dataset_top, vmax=2.75)
-    show_highE_line_cuts(ax2, dataset_top)
+    show_highE_fit_cut(ax2, dataset_top)
     show_fft(ax3, ax3cb, dataset_top)
 
     show_center_schematic(ax4)
 
     show_pc_map(ax6, ax6cb, dataset_bot)
-    show_lowE_line_cuts(ax7, dataset_bot)
+    show_lowE_fit_cut(ax7, dataset_bot)
     show_fft(ax8, ax8cb, dataset_bot, show22=True)
 
     ax1.set_title(r"$K \rightarrow K$", fontsize=12)
@@ -247,7 +352,7 @@ if __name__ == '__main__':
 
     lblparams = {'fontsize':16, 'weight':'bold'}
     x1 = 0.04
-    x2 = 0.336
+    x2 = 0.339
     x3 = 0.654
     y1 = 0.98
     y2 = 0.58
